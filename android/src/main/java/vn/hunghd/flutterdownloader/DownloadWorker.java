@@ -598,8 +598,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         // Show the notification
         if (showNotification) {
             // Create the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID).
-                    setContentTitle(title)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                    .setContentTitle("Credilio Pro")
                     .setContentIntent(intent)
                     .setOnlyAlertOnce(true)
                     .setAutoCancel(true)
