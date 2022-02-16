@@ -448,7 +448,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
             }
         } catch (IOException e) {
             taskDao.updateTask(getId().toString(), DownloadStatus.FAILED, lastProgress);
-            updateNotification(context, filename == null ? fileURL : filename, DownloadStatus.FAILED, -1, null, true);
+//            updateNotification(context, filename == null ? fileURL : filename, DownloadStatus.FAILED, -1, null, true);
+            updateNotification(context, filename == null ? "Starting Download..." : filename, DownloadStatus.FAILED, -1, null, true);
             e.printStackTrace();
         } finally {
             if (outputStream != null) {
@@ -598,8 +599,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         // Show the notification
         if (showNotification) {
             // Create the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setContentTitle("Credilio Pro")
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID).
+                    setContentTitle(title)
                     .setContentIntent(intent)
                     .setOnlyAlertOnce(true)
                     .setAutoCancel(true)
@@ -607,12 +608,12 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
 
             if (status == DownloadStatus.RUNNING) {
                 if (progress <= 0) {
-                    builder.setContentText("Starting Download...")
+                    builder.setContentText(msgStarted)
                             .setProgress(0, 0, false);
                     builder.setOngoing(false)
                             .setSmallIcon(getNotificationIconRes());
                 } else if (progress < 100) {
-                    builder.setContentText("Downloading..")
+                    builder.setContentText(msgInProgress)
                             .setProgress(100, progress, false);
                     builder.setOngoing(true)
                             .setSmallIcon(android.R.drawable.stat_sys_download);
@@ -638,7 +639,6 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                 builder.setOngoing(false)
                         .setSmallIcon(android.R.drawable.stat_sys_download_done);
             } else {
-                builder.setContentText("I am here").setProgress(0, 0, false);
                 builder.setProgress(0, 0, false);
                 builder.setOngoing(false).setSmallIcon(getNotificationIconRes());
             }
