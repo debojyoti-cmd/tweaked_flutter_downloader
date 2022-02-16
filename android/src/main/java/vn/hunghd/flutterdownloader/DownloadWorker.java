@@ -607,7 +607,7 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
 
             if (status == DownloadStatus.RUNNING) {
                 if (progress <= 0) {
-                    builder.setContentText(msgStarted)
+                    builder.setContentText("Starting Download...")
                             .setProgress(0, 0, false);
                     builder.setOngoing(false)
                             .setSmallIcon(getNotificationIconRes());
