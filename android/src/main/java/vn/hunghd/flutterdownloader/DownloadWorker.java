@@ -612,7 +612,7 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                     builder.setOngoing(false)
                             .setSmallIcon(getNotificationIconRes());
                 } else if (progress < 100) {
-                    builder.setContentText(msgInProgress)
+                    builder.setContentText("Downloading..")
                             .setProgress(100, progress, false);
                     builder.setOngoing(true)
                             .setSmallIcon(android.R.drawable.stat_sys_download);
