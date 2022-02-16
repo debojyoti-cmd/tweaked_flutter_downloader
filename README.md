@@ -1,6 +1,4 @@
-[![Flutter Community: flutter_downloader](https://fluttercommunity.dev/_github/header/flutter_downloader)](https://github.com/fluttercommunity/community)
-
-# Flutter Downloader
+# Tweaked Flutter Downloader
 
 [![pub package](https://img.shields.io/pub/v/flutter_downloader.svg)](https://pub.dartlang.org/packages/flutter_downloader)
 
