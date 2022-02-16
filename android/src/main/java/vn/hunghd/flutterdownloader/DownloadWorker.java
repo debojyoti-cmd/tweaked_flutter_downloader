@@ -443,13 +443,14 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                 DownloadTask task = taskDao.loadTask(getId().toString());
                 int status = isStopped() ? (task.resumable ? DownloadStatus.PAUSED : DownloadStatus.CANCELED) : DownloadStatus.FAILED;
                 taskDao.updateTask(getId().toString(), status, lastProgress);
-                updateNotification(context, filename == null ? fileURL : filename, status, -1, null, true);
+//                updateNotification(context, filename == null ? fileURL : filename, status, -1, null, true);
+                updateNotification(context, filename == null ?  "Please wait..." : filename, status, -1, null, true);
                 log(isStopped() ? "Download canceled" : "Server replied HTTP code: " + responseCode);
             }
         } catch (IOException e) {
             taskDao.updateTask(getId().toString(), DownloadStatus.FAILED, lastProgress);
 //            updateNotification(context, filename == null ? fileURL : filename, DownloadStatus.FAILED, -1, null, true);
-            updateNotification(context, filename == null ? "Starting Download..." : filename, DownloadStatus.FAILED, -1, null, true);
+            updateNotification(context, filename == null ? "Please wait..." : filename, DownloadStatus.FAILED, -1, null, true);
             e.printStackTrace();
         } finally {
             if (outputStream != null) {
