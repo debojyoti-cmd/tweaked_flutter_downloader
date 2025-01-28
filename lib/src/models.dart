@@ -1,68 +1,122 @@
-///
-/// A class defines a set of possible statuses of a download task
-///
-class DownloadTaskStatus {
-  final int _value;
+/// Defines a set of possible states which a [DownloadTask] can be in.
+@pragma('vm:entry-point')
+enum DownloadTaskStatus {
+  /// Status of the task is either unknown or corrupted.
+  undefined,
 
-  const DownloadTaskStatus(int value) : _value = value;
+  /// The task is scheduled, but is not running yet.
+  enqueued,
 
-  int get value => _value;
+  /// The task is in progress.
+  running,
 
-  static DownloadTaskStatus from(int value) => DownloadTaskStatus(value);
+  /// The task has completed successfully.
+  complete,
 
-  static const undefined = const DownloadTaskStatus(0);
-  static const enqueued = const DownloadTaskStatus(1);
-  static const running = const DownloadTaskStatus(2);
-  static const complete = const DownloadTaskStatus(3);
-  static const failed = const DownloadTaskStatus(4);
-  static const canceled = const DownloadTaskStatus(5);
-  static const paused = const DownloadTaskStatus(6);
+  /// The task has failed.
+  failed,
 
-  @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  /// The task was canceled and cannot be resumed.
+  canceled,
 
-    return o is DownloadTaskStatus && o._value == _value;
+  /// The task was paused and can be resumed
+  paused;
+
+  /// Creates a new [DownloadTaskStatus] from an [int].
+  factory DownloadTaskStatus.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return DownloadTaskStatus.undefined;
+      case 1:
+        return DownloadTaskStatus.enqueued;
+      case 2:
+        return DownloadTaskStatus.running;
+      case 3:
+        return DownloadTaskStatus.complete;
+      case 4:
+        return DownloadTaskStatus.failed;
+      case 5:
+        return DownloadTaskStatus.canceled;
+      case 6:
+        return DownloadTaskStatus.paused;
+      default:
+        throw ArgumentError('Invalid value: $value');
+    }
   }
-
-  @override
-  int get hashCode => _value.hashCode;
-
-  @override
-  String toString() => 'DownloadTaskStatus($_value)';
 }
 
+/// Encapsulates all information of a single download task.
 ///
-/// A model class encapsulates all task information according to data in Sqlite
-/// database.
-///
-/// * [taskId] the unique identifier of a download task
-/// * [status] the latest status of a download task
-/// * [progress] the latest progress value of a download task
-/// * [url] the download link
-/// * [filename] the local file name of a downloaded file
-/// * [savedDir] the absolute path of the directory where the downloaded file is saved
-/// * [timeCreated] milliseconds since the Unix epoch (midnight, January 1, 1970 UTC)
-///
+/// This is also the structure of the record saved in the SQLite database.
 class DownloadTask {
+  /// Creates a new [DownloadTask].
+  DownloadTask({
+    required this.taskId,
+    required this.status,
+    required this.progress,
+    required this.url,
+    required this.filename,
+    required this.savedDir,
+    required this.timeCreated,
+    required this.allowCellular,
+  });
+
+  /// Unique identifier of this task.
   final String taskId;
+
+  /// Status of this task.
   final DownloadTaskStatus status;
+
+  /// Progress between 0 (inclusive) and 100 (inclusive).
   final int progress;
+
+  /// URL from which the file is downloaded.
   final String url;
+
+  /// Local file name of the downloaded file.
   final String? filename;
+
+  /// Absolute path to the directory where the downloaded file will saved.
   final String savedDir;
+
+  /// Timestamp when the task was created.
   final int timeCreated;
 
-  DownloadTask(
-      {required this.taskId,
-      required this.status,
-      required this.progress,
-      required this.url,
-      required this.filename,
-      required this.savedDir,
-      required this.timeCreated});
+  /// Whether downloads can use cellular data
+  final bool allowCellular;
 
   @override
   String toString() =>
-      "DownloadTask(taskId: $taskId, status: $status, progress: $progress, url: $url, filename: $filename, savedDir: $savedDir, timeCreated: $timeCreated)";
+      'DownloadTask(taskId: $taskId, status: $status, progress: $progress, url: $url, filename: $filename, savedDir: $savedDir, timeCreated: $timeCreated, allowCellular: $allowCellular)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+
+    return other is DownloadTask &&
+        other.taskId == taskId &&
+        other.status == status &&
+        other.progress == progress &&
+        other.url == url &&
+        other.filename == filename &&
+        other.savedDir == savedDir &&
+        other.timeCreated == timeCreated &&
+        other.allowCellular == allowCellular;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      taskId,
+      status,
+      progress,
+      url,
+      filename,
+      savedDir,
+      timeCreated,
+      allowCellular,
+    );
+  }
 }

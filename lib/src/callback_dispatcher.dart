@@ -1,34 +1,33 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import 'models.dart';
-
+/// Pragma annotation is needed to avoid tree shaking in release mode. See
+/// https://github.com/dart-lang/sdk/blob/master/runtime/docs/compiler/aot/entry_point_pragma.md
+@pragma('vm:entry-point')
 void callbackDispatcher() {
-  const MethodChannel backgroundChannel =
-      MethodChannel('vn.hunghd/downloader_background');
+  const backgroundChannel = MethodChannel('vn.hunghd/downloader_background');
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  backgroundChannel.setMethodCallHandler((MethodCall call) async {
-    final List<dynamic> args = call.arguments;
-    final handle = CallbackHandle.fromRawHandle(args[0]);
-    final Function? callback =
-        PluginUtilities.getCallbackFromHandle(handle);
+  backgroundChannel
+    ..setMethodCallHandler((call) async {
+      final args = call.arguments as List<dynamic>;
+      final handle = CallbackHandle.fromRawHandle(args[0] as int);
+      final id = args[1] as String;
+      final status = args[2] as int;
+      final progress = args[3] as int;
 
-    if (callback == null) {
-      print('Fatal: could not find callback');
-      exit(-1);
-    }
+      final callback = PluginUtilities.getCallbackFromHandle(handle) as void
+          Function(String id, int status, int progress)?;
 
-    final String id = args[1];
-    final int status = args[2];
-    final int progress = args[3];
+      if (callback == null) {
+        // The callback wasn't registered. Ignore.
+        return;
+      }
 
-    callback(id, DownloadTaskStatus(status), progress);
-  });
-
-  backgroundChannel.invokeMethod('didInitializeDispatcher');
+      callback(id, status, progress);
+    })
+    ..invokeMethod<void>('didInitializeDispatcher');
 }
